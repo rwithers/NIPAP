@@ -27,7 +27,7 @@ FROM ubuntu:xenial
 
 MAINTAINER Lukas Garberg <lukas@spritelink.net>
 
-ENV NIPAPD_HOST=nipapd NIPAPD_PORT=1337 WWW_USERNAME=guest WWW_PASSWORD=guest
+ENV NIPAPD_HOST=nipapd NIPAPD_PORT=80 WWW_USERNAME=guest WWW_PASSWORD=guest
 
 # apt update, upgrade & install packages
 RUN apt-get update -qy && apt-get upgrade -qy \
@@ -43,8 +43,11 @@ RUN apt-get update -qy && apt-get upgrade -qy \
     python-docutils \
     python-pip \
     python-dev \
- && pip --no-input install envtpl \
  && rm -rf /var/lib/apt/lists/*
+
+RUN curl -fsSL https://bootstrap.pypa.io/pip/3.5/get-pip.py | python2.7
+
+RUN pip --no-input install envtpl
 
 # Install pynipap, nipap and nipap-www
 COPY pynipap /pynipap
@@ -55,7 +58,7 @@ RUN cd /pynipap && python setup.py install && \
     cd /nipap-www && pip --no-input install -r requirements.txt && python setup.py install && \
     cd ..
 
-EXPOSE 80
+EXPOSE 80 
 VOLUME [ "/var/log/apache2" ]
 
 ENTRYPOINT [ "/nipap-www/entrypoint.sh" ]

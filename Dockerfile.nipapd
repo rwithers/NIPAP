@@ -49,16 +49,18 @@ RUN apt-get update -qy && apt-get upgrade -qy \
     python-docutils \
     python-pip \
     python-dev \
- && pip --no-input install envtpl \
  && rm -rf /var/lib/apt/lists/*
 
+RUN curl -fsSL https://bootstrap.pypa.io/pip/3.5/get-pip.py | python2.7
+
+RUN pip --no-input install envtpl
 
 COPY nipap /nipap
 WORKDIR /nipap
 RUN pip --no-input install -r requirements.txt \
  && python setup.py install
 
-EXPOSE 1337
-ENV LISTEN_ADDRESS=0.0.0.0 LISTEN_PORT=1337 SYSLOG=false DB_PORT=5432 DB_SSLMODE=disable
+EXPOSE 80 
+ENV LISTEN_ADDRESS=0.0.0.0 LISTEN_PORT=80 SYSLOG=false DB_PORT=5432 DB_SSLMODE=disable
 
 ENTRYPOINT ["/nipap/entrypoint.sh"]
